@@ -1,0 +1,23 @@
+# Copilot Instructions
+
+- Stack: docker compose brings up Keycloak 26.3.2, Trino 476, and a Python initializer that seeds Keycloak; see [docker-compose.yaml](docker-compose.yaml).
+- TLS and identity: Keycloak is exposed on 8443 with custom certs mounted from [certs](certs); bootstrap admin creds are admin/admin via env vars; command uses `start-dev` with https cert args in [docker-compose.yaml](docker-compose.yaml).
+- Trino auth: Trino is configured for OAuth2 against Keycloak master realm; see [trino/config.properties](trino/config.properties) for issuer, client id `trinodb`, static client secret, keystore paths (/certs/trino-keystore.p12), and web UI OAuth2 enablement.
+- Secret alignment: create_client prints a generated secret but Trino config pins a fixed secret string; if the generated secret differs, update Trino config or set the client secret manually to keep login working.
+- Internal comms: Trino trusts the same keystore for JWK fetch (oauth2-jwk.http-client.trust-store-path) and uses a long shared secret for internal communication in [trino/config.properties](trino/config.properties).
+- Trino catalogs: sample connectors configured under [trino/catalog](trino/catalog) (jmx, memory, tpcds, tpch) for local exploration; environment-driven catalog management via `CATALOG_MANAGEMENT` in config.properties.
+- JVM/logging: Trino JVM and logging settings live in [trino/jvm.config](trino/jvm.config) and [trino/log.properties](trino/log.properties); OAuth2 logging can be toggled there for debugging flows.
+- Initializer purpose: Python app seeds Keycloak with users and the `trinodb` client; entrypoint is [initializer/src/main.py](initializer/src/main.py) which runs user creation then client creation.
+- Keycloak client creation: [initializer/src/create_client.py](initializer/src/create_client.py) connects via `KeycloakAdmin` (verify disabled), creates a public OIDC client `trinodb` with redirect URL http://trinodb/oauth2/callback, and generates a secret; it retries every 5s on failure.
+- User seeding: [initializer/src/create_user.py](initializer/src/create_user.py) creates two users (antonio.murgia, andrea.fonti) with password `StrongP@ssword123`, enabled and non-temporary; emails use `@agilelab.it`; retries every 5s if Keycloak is not ready.
+- Admin client helper: [initializer/src/constants.py](initializer/src/constants.py) centralizes the Keycloak endpoint (https://keycloak:8443), redirect URL, and admin client bootstrap; TLS verification is disabled.
+- Python packaging: [initializer/src/pyproject.toml](initializer/src/pyproject.toml) uses Python 3.13 and `python-keycloak` with uv-managed lock; dev tool Ruff is listed under `tool.uv` dev-dependencies.
+- Image build: [initializer/Dockerfile](initializer/Dockerfile) is a two-stage uv build producing a slim Python image that runs `python main.py`; bind mounts expect `uv.lock` and `pyproject.toml` at build time.
+- Running locally: from repo root, `docker compose up --build` will build the initializer image and start all services (requires certs present at ./certs as referenced by compose and Trino/Keycloak configs).
+- Default access: after startup, Keycloak admin UI should be reachable at https://localhost:8443 (accept self-signed); Trino UI at https://localhost:8543; log in via Keycloak using seeded users if secrets align.
+- Adding users: extend the `create_users` flow in [initializer/src/create_user.py](initializer/src/create_user.py) with new `create_user_obj` entries; remember to set passwords and keep retry loop behavior.
+- Adjusting client settings: edit the client representation in [initializer/src/create_client.py](initializer/src/create_client.py) (e.g., redirect URIs, public vs confidential) and sync matching values in [trino/config.properties](trino/config.properties).
+- Certificates: certs are assumed to be pre-generated (servers.pem, servers-key.pem, trino-keystore.p12) and mounted into all containers; update compose and Trino paths together if you regenerate them.
+- Network expectations: services communicate on the docker network using hostnames `keycloak` and `trinodb`; callback URLs and issuer URLs are hard-coded to those hosts.
+- Error handling: initializer scripts loop with sleep on errors rather than failing; check container logs to confirm successful creation.
+- Security note: secrets and passwords in the repo are for local/demo use; rotate or externalize them before any real deployment.

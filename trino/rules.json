@@ -1,0 +1,9 @@
+{
+  "schemas": [
+    {
+      "group": "trino-admins",
+      "schema": ".*",
+      "owner": true
+    }
+  ]
+}

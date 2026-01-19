@@ -1,0 +1,27 @@
+#single node install config
+coordinator=true
+node-scheduler.include-coordinator=true
+http-server.http.port=8080
+discovery.uri=http://trinodb:8080
+catalog.management=${ENV:CATALOG_MANAGEMENT}
+
+
+http-server.https.port=8543
+http-server.https.enabled=true
+http-server.authentication.type=oauth2
+http-server.authentication.oauth2.issuer=https://keycloak:8443/realms/master
+http-server.authentication.oauth2.client-id=trinodb
+http-server.authentication.oauth2.client-secret=YyrRCivlUmKUSfm1oVZdHfxLMr869bk4
+http-server.authentication.oauth2.principal-field=email
+
+http-server.https.keystore.path=/certs/trino-keystore.p12
+http-server.https.keystore.key=changeit
+oauth2-jwk.http-client.trust-store-path=/certs/trino-keystore.p12
+oauth2-jwk.http-client.trust-store-password=changeit
+
+
+web-ui.enabled=true
+web-ui.authentication.type=oauth2
+
+
+internal-communication.shared-secret=kpDuBuCHWQWjxYhvGSrTAhy0anrS1RZgqjz7AN2kxDp6tDul0TnPKD2E3U3l1cbEBL9qvwQ7QlAUmeNxM4xNBJYwisn08Q82/wMendy+2GtzUFWpYbY9ji3HtdGST/oRfkhIA02ea8y8SoLeqtp5XnmIOlmQ22oTPrDJ3dduHTZDg+CB3td+WzcTLohKDSGjCHfpIH4Tszlu73eg9dKwbv7HfnYZBAh44LTekQGRTOivOCGKrCm2snajVpFxRqzTQeGQDK9hf0ZnR5q2uugPqrLYtAd5p+pkJAvnfA0Mi0aGzCKULXeZhpgZ2n1mNmo6JQvNWqgI+PuTAuX5DiOsWMKZ4D9zT+pzbPU0iV4rElzk1kOHjI2IPxvHP7054J9FslyymAsXnj/43EqPQ+raGIqFdFTOKpEV7F/hjqBUS3axsKSSYH4b+aikLURLOLCgqmQOC99SSH1rifSEhHfhxSaOezKoiLZKRGLVyfhkgv4/aCgqJIBF/nykQFIMtuCf/NcMUhkx5ahX5v+4p6h7z9gZKrDvaQgbrvrG80MdIO76KIzPXC701+jndMWHqVAgMiIoHpih5P/Hz9iMcnjWEUY6r1plCpIjGon+6glixXoTugXBBalS6RmjjX5n6dsa9VGHiyvXKrhwiqet5CLzpMy/6Zply3WfPBXrnFb+tEc

@@ -1,0 +1,35 @@
+{
+  "schemas": [
+    {
+      "user": "antonio.murgia@agilelab.it",
+      "schema": ".*",
+      "owner": true
+    },
+    {
+      "user": "andrea.fonti@agilelab.it",
+      "schema": "test",
+      "owner": false
+    }
+  ],
+  "tables": [
+    {
+      "user": "antonio.murgia@agilelab.it",
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "DELETE",
+        "UPDATE",
+        "OWNERSHIP"
+      ]
+    },
+    {
+      "user": "andrea.fonti@agilelab.it",
+      "schema": "test",
+      "table": "nation_view",
+      "privileges": [
+        "SELECT",
+        "GRANT_SELECT"
+      ]
+    }
+  ]
+}

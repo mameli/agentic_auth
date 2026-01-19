@@ -1,0 +1,36 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5.1
+    container_name: keycloak
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_HOSTNAME=keycloak
+    volumes:
+      - ./certs:/certs
+    ports:
+      - "8090:8080"
+      - "8443:8443"
+    command: start-dev --https-certificate-file=/certs/servers.pem --https-certificate-key-file=/certs/servers-key.pem
+  trinodb:
+    profiles:
+      - manual
+    build:
+      context: ./keycloak-groups-plugin
+      dockerfile: ../trino/container-image/Dockerfile
+    container_name: trinodb
+    volumes:
+      - ./trino:/etc/trino
+      - ./certs:/certs
+    ports:
+      - "8081:8080"
+      - "8543:8543"
+    depends_on:
+      - keycloak
+  initializer:
+    build:
+      context: ./pyscripts
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./certs:/certs
+      - ./trino:/trino
