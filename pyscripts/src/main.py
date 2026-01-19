@@ -27,7 +27,7 @@ def _update_trino_client_secret(trino_config_path: Path, key: str, secret: str):
 def main():
     urllib3.disable_warnings()
     create_user.create_users()
-    secret = create_client.create_clients()
+    secret = create_client.create_trino_client()
     if secret:
         root = Path("/")
         trino_config = root / "trino" / "config.properties"
@@ -40,6 +40,13 @@ def main():
         )
     else:
         print("No client secret returned; skipping Trino update")
+    secret = create_client.create_app_client()
+    if secret:
+        root = Path("/")
+        webapp_config = root / "python_auth_app_conf" / ".env"
+        _update_trino_client_secret(
+            webapp_config, "client_secret=", secret
+        )
 
 
 if __name__ == "__main__":

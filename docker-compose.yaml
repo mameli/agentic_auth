@@ -34,3 +34,18 @@ services:
     volumes:
       - ./certs:/certs
       - ./trino:/trino
+      - ./python_auth_app_conf:/python_auth_app_conf
+
+  webapp:
+    profiles:
+      - manual
+    build:
+      context: ./python_auth_app
+      dockerfile: ./Dockerfile
+    container_name: webapp
+    volumes:
+      - ./python_auth_app_conf/.env:/app/.env
+    ports:
+      - "5555:5555"
+    depends_on:
+      - keycloak

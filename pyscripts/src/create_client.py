@@ -1,8 +1,55 @@
 import time
 import constants
 
+def create_app_client():
+    while True:
+        try:
+            print("Starting")
+            # Configure Keycloak connection
+            keycloak_admin = constants.create_keycloak_admin()
+            # Define client configuration
+            client_representation = {
+                "clientId": "pythonapp",
+                "enabled": True,
+                "redirectUris": [f"{constants.app_url}/auth"],
+                "publicClient": False,
+                "protocol": "openid-connect",
+                "attributes": {
+                    "post.logout.redirect.uris": f"{constants.app_url}/logout.html"
+                },
+            }
 
-def create_clients():
+            # Create the client
+            client_id = keycloak_admin.create_client(
+                payload=client_representation, skip_exists=True
+            )
+            # need to perform the update otherwise the attributes are not set....
+            # keycloak_admin.update_client(client_id, client_representation)
+            print(f"Created client with ID: {client_id}")
+            # Create client secret
+            
+            client_secret = keycloak_admin.generate_client_secrets(client_id)
+            print(f"Generated client secret: {client_secret}")
+            # Normalize returned secret structure (dict vs string)
+            if isinstance(client_secret, dict):
+                client_secret_value = (
+                    client_secret.get("value")
+                    or client_secret.get("secret")
+                    or str(client_secret)
+                )
+            else:
+                client_secret_value = str(client_secret)
+
+            print(f"Using client secret: {client_secret_value}")
+            # associate service account role to make group plugin work
+            return client_secret_value
+        except Exception as e:
+            print(f"Error: {e}. Retrying in 5 seconds...")
+            import traceback
+
+            traceback.print_exc()
+            time.sleep(5)
+def create_trino_client():
     while True:
         try:
             print("Starting")

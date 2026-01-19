@@ -11,7 +11,7 @@ http-server.https.enabled=true
 http-server.authentication.type=oauth2
 http-server.authentication.oauth2.issuer=https://keycloak:8443/realms/master
 http-server.authentication.oauth2.client-id=trinodb
-http-server.authentication.oauth2.client-secret=YyrRCivlUmKUSfm1oVZdHfxLMr869bk4
+http-server.authentication.oauth2.client-secret=lKBbaN4E08PkPhVzkzCDbS4CNEEj5eZy
 http-server.authentication.oauth2.principal-field=email
 
 http-server.https.keystore.path=/certs/trino-keystore.p12

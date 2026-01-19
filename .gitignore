@@ -232,3 +232,4 @@ pyrightconfig.json
 .vscode
 certs
 .idea
+*.bak
