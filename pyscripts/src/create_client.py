@@ -11,11 +11,11 @@ def create_app_client():
             client_representation = {
                 "clientId": "pythonapp",
                 "enabled": True,
-                "redirectUris": [f"{constants.app_url}/auth"],
+                "redirectUris": [f"{constants.app_url}/callback"],
                 "publicClient": False,
                 "protocol": "openid-connect",
                 "attributes": {
-                    "post.logout.redirect.uris": f"{constants.app_url}/logout.html"
+                    "post.logout.redirect.uris": f"{constants.app_url}/"
                 },
             }
 

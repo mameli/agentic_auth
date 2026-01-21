@@ -21,9 +21,11 @@ COPY --from=builder /app/.venv /app/.venv
 
 # Copy application source code
 COPY src/ ./src/
+COPY templates/ ./templates/
 
 # Set environment to use the virtual environment
 ENV PATH="/app/.venv/bin:$PATH"
-
+ENV PORT=5555
 # Run the application
-CMD ["python", "src/main.py"]
+ENV PORT=5555
+CMD ["sh", "-c", "python -m fastapi run src/python_auth_app/main.py --host 0.0.0.0 --port ${PORT}"]
