@@ -233,3 +233,4 @@ pyrightconfig.json
 certs
 .idea
 *.bak
+*.env

@@ -26,7 +26,6 @@ import javax.net.ssl.SSLContext;
 
 public class KeycloakGroupProvider implements GroupProvider {
     private static final Logger log = Logger.get(KeycloakGroupProvider.class);
-    //    private final KeycloakAdminClient client; // Your wrapper for the Admin API
     private final String url;
     private final String clientId;
     private final String clientSecret;
@@ -120,8 +119,6 @@ public class KeycloakGroupProvider implements GroupProvider {
         } finally {
             Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
-        // 1. Get User UUID by username
-
     }
 
     private static Optional<SSLContext> createSslContext(Optional<File> keyStorePath, Optional<String> keyStorePassword, Optional<File> trustStorePath, Optional<String> trustStorePassword) {

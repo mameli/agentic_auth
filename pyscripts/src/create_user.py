@@ -1,6 +1,6 @@
 from keycloak import KeycloakAdmin
 import time
-import constants
+
 
 def create_group(keycloak_admin):
     """Create the trino-admins group if it doesn't exist and return its ID."""
@@ -10,7 +10,7 @@ def create_group(keycloak_admin):
         }
         group_id = keycloak_admin.create_group(payload=group_data, skip_exists=True)
         print(f"Group 'trino-admins' exists or created with ID: {group_id}")
-        
+
         # If skip_exists=True and group already exists, we need to fetch it
         if not group_id:
             groups = keycloak_admin.get_groups()
@@ -18,11 +18,12 @@ def create_group(keycloak_admin):
                 if group["name"] == "trino-admins":
                     group_id = group["id"]
                     break
-        
+
         return group_id
     except Exception as e:
         print(f"Error creating group: {e}")
         raise
+
 
 def create_user_obj(name: str, surname: str):
     return {
@@ -34,12 +35,9 @@ def create_user_obj(name: str, surname: str):
     }
 
 
-def create_users():
+def create_users(keycloak_admin: KeycloakAdmin):
     while True:
         try:
-            # Connect to Keycloak admin
-            keycloak_admin = constants.create_keycloak_admin()
-            
             # Create the group
             group_id = create_group(keycloak_admin)
 
@@ -51,10 +49,10 @@ def create_users():
                 user_id, "StrongP@ssword123", temporary=False
             )
             print(f"User created with ID: {user_id}")
-            
+
             # Add antonio to trino-admins group
             keycloak_admin.group_user_add(user_id, group_id)
-            print(f"Added user to trino-admins group")
+            print(f"Added user {user_id} to trino-admins group")
 
             print("Creating user andrea")
             new_user = create_user_obj("andrea", "fonti")

@@ -1,52 +1,31 @@
 import create_user
 import create_client
 from pathlib import Path
-import re
 import urllib3
+import constants
 
 
-def _update_trino_client_secret(trino_config_path: Path, key: str, secret: str):
-    trino_config_path = Path(trino_config_path)
-    if not trino_config_path.exists():
-        print(f"Trino config file {trino_config_path} not found, skipping update.")
-        return
-    text = trino_config_path.read_text()
-    # create a backup
-    backup = trino_config_path.with_name(trino_config_path.name + ".bak")
-    backup.write_text(text)
-    if key in text:
-        new_text = re.sub(
-            r"^" + re.escape(key) + r".*$", f"{key}{secret}", text, flags=re.M
-        )
-    else:
-        new_text = text + f"\n{key}{secret}\n"
-    trino_config_path.write_text(new_text)
-    print(f"Updated {trino_config_path} (backup at {backup})")
+def create_env_file(file: Path, values: dict[str, str]):
+    print(f"Creating env file {file}")
+    content = "\n".join([f"{k}={v}" for k, v in values.items()])
+    file.write_text(content)
+    print(f"Written {file} with content:\n{content}")
 
 
 def main():
     urllib3.disable_warnings()
-    create_user.create_users()
-    secret = create_client.create_trino_client()
+    keycloak_admin = constants.create_keycloak_admin()
+    create_user.create_users(keycloak_admin)
+    secret = create_client.create_trino_client(keycloak_admin)
     if secret:
-        root = Path("/")
-        trino_config = root / "trino" / "config.properties"
-        trino_group_config = root / "trino" / "group-provider.properties"
-        _update_trino_client_secret(
-            trino_config, "http-server.authentication.oauth2.client-secret=", secret
-        )
-        _update_trino_client_secret(
-            trino_group_config, "keycloak.client-secret=", secret
-        )
+        trino_env_file = Path("/") / "env_files" / "trino.env"
+        create_env_file(trino_env_file, {"OAUTH2_CLIENT_SECRET": secret})
     else:
         print("No client secret returned; skipping Trino update")
-    secret = create_client.create_app_client()
+    secret = create_client.create_app_client(keycloak_admin)
     if secret:
-        root = Path("/")
-        webapp_config = root / "python_auth_app_conf" / ".env"
-        _update_trino_client_secret(
-            webapp_config, "client_secret=", secret
-        )
+        webapp_env_file = Path("/") / "env_files" / "webapp.env"
+        create_env_file(webapp_env_file, {"client_secret": secret})
 
 
 if __name__ == "__main__":

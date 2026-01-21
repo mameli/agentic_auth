@@ -19,6 +19,7 @@ services:
       context: ./keycloak-groups-plugin
       dockerfile: ../trino/container-image/Dockerfile
     container_name: trinodb
+    env_file: "env_files/trino.env"
     volumes:
       - ./trino:/etc/trino
       - ./certs:/certs
@@ -33,8 +34,7 @@ services:
       dockerfile: ./Dockerfile
     volumes:
       - ./certs:/certs
-      - ./trino:/trino
-      - ./python_auth_app_conf:/python_auth_app_conf
+      - ./env_files:/env_files
 
   webapp:
     profiles:
@@ -43,8 +43,7 @@ services:
       context: ./python_auth_app
       dockerfile: ./Dockerfile
     container_name: webapp
-    volumes:
-      - ./python_auth_app_conf/.env:/app/.env
+    env_file: "env_files/webapp.env"
     ports:
       - "5555:5555"
     depends_on:

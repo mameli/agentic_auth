@@ -1,9 +1,0 @@
-group-provider.name=keycloak
-keycloak.url=https://keycloak:8443
-keycloak.client-id=trinodb
-keycloak.client-secret=dAY6w4f3z566TlA3VMJBfAU8jrNaX0Ia
-keycloak.realm=master
-keycloak.keystore.path=/certs/trino-keystore.p12
-keycloak.keystore.key=changeit
-keycloak.trust-store-path=/certs/trino-keystore.p12
-keycloak.trust-store-password=changeit
