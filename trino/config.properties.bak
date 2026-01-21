@@ -8,16 +8,23 @@ catalog.management=${ENV:CATALOG_MANAGEMENT}
 
 http-server.https.port=8543
 http-server.https.enabled=true
-http-server.authentication.type=oauth2
+http-server.authentication.type=oauth2,jwt
 http-server.authentication.oauth2.issuer=https://keycloak:8443/realms/master
 http-server.authentication.oauth2.client-id=trinodb
-http-server.authentication.oauth2.client-secret=XDy3GrROgdv5n3Ll9Mk8149i8jda3Gu6
+http-server.authentication.oauth2.client-secret=dAY6w4f3z566TlA3VMJBfAU8jrNaX0Ia
 http-server.authentication.oauth2.principal-field=email
 
 http-server.https.keystore.path=/certs/trino-keystore.p12
 http-server.https.keystore.key=changeit
 oauth2-jwk.http-client.trust-store-path=/certs/trino-keystore.p12
 oauth2-jwk.http-client.trust-store-password=changeit
+
+jwk.http-client.trust-store-path=/certs/trino-keystore.p12
+jwk.http-client.trust-store-password=changeit
+
+http-server.authentication.jwt.key-file=https://keycloak:8443/realms/master/protocol/openid-connect/certs
+http-server.authentication.jwt.required-audience=trinodb
+http-server.authentication.jwt.principal-field=email
 
 
 web-ui.enabled=true

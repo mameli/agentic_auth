@@ -1,6 +1,7 @@
 import time
 import constants
 
+trinodb_client_id = "trinodb"
 def create_app_client():
     while True:
         try:
@@ -15,7 +16,8 @@ def create_app_client():
                 "publicClient": False,
                 "protocol": "openid-connect",
                 "attributes": {
-                    "post.logout.redirect.uris": f"{constants.app_url}/"
+                    "post.logout.redirect.uris": f"{constants.app_url}",
+                    "standard.token.exchange.enabled": "true",
                 },
             }
 
@@ -26,8 +28,42 @@ def create_app_client():
             # need to perform the update otherwise the attributes are not set....
             # keycloak_admin.update_client(client_id, client_representation)
             print(f"Created client with ID: {client_id}")
-            # Create client secret
+            mapper = {
+                "name": f"{trinodb_client_id}-audience-mapper",
+                "protocol": "openid-connect",
+                "protocolMapper": "oidc-audience-mapper",
+                "consentRequired": False,
+                "config": {
+                    "included.client.audience": trinodb_client_id,
+                    "id.token.claim": "false",
+                    "access.token.claim": "true",
+                },
+            }
+            scope = {
+                "name": "scope-token-exchange",
+                "description": "Allowing token exchange",
+                "protocol": "openid-connect",
+                "attributes": {
+                    "type": "default",
+                    "include.in.token.scope": "true",
+                    "display.on.consent.screen": "false",
+                },
+                "protocolMappers": [mapper],
+            }
+            client_scope_id = keycloak_admin.create_client_scope(
+                scope, skip_exists=True
+            )
+            keycloak_admin.add_client_optional_client_scope(
+                client_id=client_id,
+                client_scope_id=client_scope_id,
+                payload={
+                    "realm": keycloak_admin.connection.realm_name,
+                    "client": client_id,
+                    "clientScopeId": client_scope_id,
+                },
+            )
             
+            # Create client secret
             client_secret = keycloak_admin.generate_client_secrets(client_id)
             print(f"Generated client secret: {client_secret}")
             # Normalize returned secret structure (dict vs string)
@@ -49,6 +85,8 @@ def create_app_client():
 
             traceback.print_exc()
             time.sleep(5)
+
+
 def create_trino_client():
     while True:
         try:
@@ -57,14 +95,14 @@ def create_trino_client():
             keycloak_admin = constants.create_keycloak_admin()
             # Define client configuration
             client_representation = {
-                "clientId": "trinodb",
+                "clientId": trinodb_client_id,
                 "enabled": True,
                 "redirectUris": [f"{constants.trino_url}/oauth2/callback"],
                 "publicClient": False,
                 "serviceAccountsEnabled": True,
                 "protocol": "openid-connect",
                 "attributes": {
-                    "post.logout.redirect.uris": f"{constants.trino_url}/ui/logout/logout.html"
+                    "post.logout.redirect.uris": f"{constants.trino_url}/ui/logout/logout.html",
                 },
                 "defaultClientScopes": [
                     "service_account",
