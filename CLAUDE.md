@@ -102,5 +102,5 @@ Trino - port 8081/8543
 ## Test Users
 
 Created by initializer container:
-- `antonio.murgia` / `StrongP@ssword123` (in trino-admins group)
-- `andrea.fonti` / `StrongP@ssword123` (in trino-admins group)
+- `antonio.murgia@agilelab.it` / `StrongP@ssword123` (in trino-admins group)
+- `andrea.fonti@agilelab.it` / `StrongP@ssword123`

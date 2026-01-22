@@ -179,7 +179,7 @@ def create_trino_client(keycloak_admin: KeycloakAdmin):
             client_id = keycloak_admin.create_client(
                 payload=client_representation, skip_exists=True
             )
-            create_groups_scope(keycloak_admin) # todo maybe this is useless
+            # create_groups_scope(keycloak_admin)
             add_view_role_to_client(keycloak_admin, client_id)
             client_secret = keycloak_admin.generate_client_secrets(client_id)
             return normalize_secret(client_secret)

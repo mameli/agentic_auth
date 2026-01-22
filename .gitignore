@@ -230,7 +230,8 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/python,java,osx,win
 .metals
 .vscode
-certs
 .idea
 *.bak
+*.pem
+*.p12
 *.env

@@ -7,7 +7,6 @@ if __name__ == "__main__":
     conn = connect(
         host="trinodb",
         port=8543,
-        user="antonio.murgia@agilelab.it",
         auth=OAuth2Authentication(),
         http_scheme="https",
         verify=False,

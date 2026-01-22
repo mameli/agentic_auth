@@ -1,7 +1,7 @@
 {
   "schemas": [
     {
-      "user": "antonio.murgia@agilelab.it",
+      "group": "trino-admins",
       "schema": ".*",
       "owner": true
     },
@@ -13,7 +13,7 @@
   ],
   "tables": [
     {
-      "user": "antonio.murgia@agilelab.it",
+      "group": "trino-admins",
       "privileges": [
         "SELECT",
         "INSERT",
